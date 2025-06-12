@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,12 +28,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 class CrashController {
 
-	@GetMapping("/oups")
-	public String triggerException() {
-//		throw new RuntimeException(
-//				"Expected: controller used to showcase what " + "happens when an exception is thrown");
-int numberOfItems = 0;
-Int crash = 10/numberOfItems;
-}
+    @GetMapping("/oups")
+    public String triggerException() {
+         throw new RuntimeException(
+         "Expected: controller used to showcase what " + "happens when an exception is thrown");
+    }
 
 }
