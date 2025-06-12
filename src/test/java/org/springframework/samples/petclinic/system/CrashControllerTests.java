@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.samples.petclinic.system;
+ package org.springframework.samples.petclinic.system;
 
-import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
-/**
- * Test class for {@link CrashController}
- *
- * @author Colin But
- * @author Alex Lutz
- */
-// Waiting https://github.com/spring-projects/spring-boot/issues/5574 ..good
-// luck ((plain(st) UNIT test)! :)
-class CrashControllerTests {
-
-	final CrashController testee = new CrashController();
-
-	@Test
-	void testtriggerGenericException() {
-		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> testee.triggerGenericException())
-			.withMessageContaining("Expected: controller used to showcase what happens when an exception is thrown");
-	}
-
-}
+ import org.junit.jupiter.api.Test;
+ 
+ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+ 
+ /**
+  * Test class for {@link CrashController}
+  *
+  * @author Colin But
+  * @author Alex Lutz
+  */
+ // Waiting https://github.com/spring-projects/spring-boot/issues/5574 ..good
+ // luck ((plain(st) UNIT test)! :)
+ class CrashControllerTests {
+ 
+	 final CrashController testee = new CrashController();
+ 
+	 @Test
+	 void testtriggerGenericException() {
+		 assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> testee.triggerGenericException())
+			 .withMessageContaining("This is a generic runtime exception. Something unexpected went wrong!");
+	 }
+ 
+ }
