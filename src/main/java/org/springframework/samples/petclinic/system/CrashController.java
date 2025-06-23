@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit; // <-- Add this import!
 
 /**
  * Controller used to showcase different types of exceptions and scenarios.
@@ -16,6 +17,11 @@ import java.io.IOException;
  */
 @Controller
 class CrashController {
+
+    // --- Deadlock Scenario Locks ---
+    // These objects will be used as locks for our deadlock simulation
+    private final Object lockA = new Object();
+    private final Object lockB = new Object();
 
     /**
      * Triggers a generic RuntimeException.
@@ -117,13 +123,63 @@ class CrashController {
      */
     @GetMapping("/stack-overflow")
     public String triggerStackOverflowError() {
-        return recursiveMethod(0); // Start the infinite recursion
+        // You'll likely need to revert this to the "broken" (infinite recursion) version for the AI test:
+        // return recursiveMethod(0);
+        // Or if you want it to always cause StackOverflow:
+        // recursiveMethod(0); // This will cause the error
+        // return "error"; // This line is generally not reached
+        
+        // For the AI test of the StackOverflow, you want it to actually overflow.
+        // So revert to:
+        return recursiveMethodForSOE(0);
     }
 
-    private String recursiveMethod(int count) {
-        // This method calls itself indefinitely.
-        // It's designed to not have a base case to stop the recursion,
-        // which will eventually lead to a StackOverflowError as the call stack fills up.
-        return recursiveMethod(count + 1);
+    // Helper method for StackOverflowError, intentionally without base case for the demo
+    private String recursiveMethodForSOE(int count) {
+        // This method calls itself indefinitely, leading to StackOverflowError
+        return recursiveMethodForSOE(count + 1);
+    }
+
+
+    /**
+     * Simulates one part of a potential deadlock scenario.
+     * Accessible via /deadlock/one
+     * A thread hitting this endpoint will try to acquire Lock A, then Lock B.
+     */
+    @GetMapping("/deadlock/one")
+    public String triggerDeadlockScenarioOne() throws InterruptedException {
+        System.out.println(Thread.currentThread().getName() + " trying to acquire lockA (scenario one)...");
+        synchronized (lockA) { // Acquire lockA
+            System.out.println(Thread.currentThread().getName() + " acquired lockA (scenario one). Sleeping...");
+            TimeUnit.SECONDS.sleep(2); // Simulate work while holding lockA
+
+            System.out.println(Thread.currentThread().getName() + " trying to acquire lockB (scenario one)...");
+            synchronized (lockB) { // Try to acquire lockB
+                System.out.println(Thread.currentThread().getName() + " acquired lockB (scenario one). Releasing locks.");
+            }
+        }
+        System.out.println(Thread.currentThread().getName() + " released all locks (scenario one).");
+        return "error"; // Return an error page for consistent behavior
+    }
+
+    /**
+     * Simulates the other part of a potential deadlock scenario.
+     * Accessible via /deadlock/two
+     * A thread hitting this endpoint will try to acquire Lock B, then Lock A.
+     */
+    @GetMapping("/deadlock/two")
+    public String triggerDeadlockScenarioTwo() throws InterruptedException {
+        System.out.println(Thread.currentThread().getName() + " trying to acquire lockB (scenario two)...");
+        synchronized (lockB) { // Acquire lockB
+            System.out.println(Thread.currentThread().getName() + " acquired lockB (scenario two). Sleeping...");
+            TimeUnit.SECONDS.sleep(2); // Simulate work while holding lockB
+
+            System.out.println(Thread.currentThread().getName() + " trying to acquire lockA (scenario two)...");
+            synchronized (lockA) { // Try to acquire lockA
+                System.out.println(Thread.currentThread().getName() + " acquired lockA (scenario two). Releasing locks.");
+            }
+        }
+        System.out.println(Thread.currentThread().getName() + " released all locks (scenario two).");
+        return "error"; // Return an error page for consistent behavior
     }
 }
